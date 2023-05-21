@@ -1,73 +1,31 @@
 const setup = () => {
-  let firstCard = undefined;
-  let secondCard = undefined;
-  let totalCards = 3;
-  let matchedCards = 0;
-  let clicks = 0;
-  let time = 100;
-  let gameStarted = false;
-  let selectedDifficulty = "easy";
-  let difficultyMultiplier = 1;
+  let firstCard, secondCard, totalCards = 3, matchedCards = 0, clicks = 0, time = 60;
+  let gameStarted = false, selectedDifficulty = "easy", difficultyMultiplier = 1;
 
+  let timerInterval;
   const clicksCounter = $("#clicks");
   const pairsCounter = $("#pairs");
   const timerCounter = $("#timer");
-  const startButton = $("#startButton");
-  const resetButton = $("#resetButton");
   const easyButton = $("#easy");
   const mediumButton = $("#medium");
   const hardButton = $("#hard");
+  const startButton = $("#startButton");
+  const resetButton = $("#resetButton");
+  const lightButton = $("#light");
+  const darkButton = $("#dark");
+  const gameGrid = $("#game_grid");
 
-  let timerInterval;
-
-  const createCards = () => {
-    const container = $("#game_grid");
-    const cardsCount = 6 * difficultyMultiplier;
-
-    const randomNumbersArray = generateRandomNumbersArray(cardsCount / 2);
-    console.log(randomNumbersArray);
-
-    for (let i = 0; i < cardsCount; i++) {
-      const cardElement = $("<div>").addClass("card");
-
-      if (cardsCount == 24) {
-        cardElement.addClass("hard");
-      }
-      if (cardsCount == 12) {
-        container.addClass("med");
-        cardElement.addClass("med");
-      }
-
-      const frontFace = $("<div>")
-        .addClass("front_face")
-        .attr("id", `front_${i}`);
-
-      const frontImage = $("<img>")
-        .attr(
-          "src",
-          `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${randomNumbersArray[i]}.png`
-        )
-        .addClass("pokemon_image");
-
-      frontFace.append(frontImage);
-
-      const backFace = $("<div>")
-        .addClass("back_face")
-        .attr("id", `back_${i}`);
-
-      const backImage = $("<img>")
-        .attr("src", "back.webp")
-        .addClass("back_image");
-
-      backFace.append(backImage);
-
-      cardElement.append(frontFace);
-      cardElement.append(backFace);
-
-      container.append(cardElement);
-      totalCards += 1 / 2;
-    }
+  //Switch Theme Color
+  const switchToLight = () => {
+    $(".card").css("background-color", "white");
   };
+  
+  const switchToDark = () => {
+    $(".card").css("background-color", "black");
+  };
+  
+  lightButton.on("click", switchToLight);
+  darkButton.on("click", switchToDark);
 
   const startTimer = () => {
     timerInterval = setInterval(() => {
@@ -77,7 +35,7 @@ const setup = () => {
       if (time === 0) {
         clearInterval(timerInterval);
         setTimeout(() => {
-          alert("Game Over! GG");
+          alert("Game is Over.");
           resetGame();
         }, 500);
       }
@@ -93,6 +51,7 @@ const setup = () => {
     timerCounter.text(`Time Left: ${time}`);
   };
 
+  //Time of Each difficulty
   const timeDifficulty = (difficulty) => {
     if (difficulty === "medium") {
       return 120;
@@ -106,7 +65,7 @@ const setup = () => {
   const startGame = () => {
     gameStarted = true;
     $(".card").on("click", flipCard);
-    alert("Game started!");
+    alert("Game is started! Have Fun!");
     startTimer();
   };
 
@@ -122,9 +81,7 @@ const setup = () => {
     totalCards = 0;
     createCards();
     $(".card").remove();
-
     $(".card").removeClass("flip").off("click");
-    $("#game_grid").removeClass("dark");
     createCards();
     updateStats();
   };
@@ -149,8 +106,41 @@ const setup = () => {
     }
   }
 
+  const createCards = () => {
+    const container = $("#game_grid");
+    const cardsCount = 6 * difficultyMultiplier;
+    const randomNumbersArray = generateRandomNumbersArray(cardsCount / 2);
+
+    console.log(randomNumbersArray);
+
+    if (cardsCount === 12) {
+      container.addClass("med");
+    }
+
+    for (let i = 0; i < cardsCount; i++) {
+      const cardElement = $("<div>").addClass("card");
+      if (cardsCount === 24) cardElement.addClass("hard");
+      if (cardsCount === 12) cardElement.addClass("med");
+
+      const frontFace = $("<img>")
+        .addClass("front_face")
+        .attr("src", `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${randomNumbersArray[i]}.png`)
+        .attr("id", `front_${i}`);
+      const backFace = $("<img>")
+        .addClass("back_face")
+        .attr("src", `back.webp`)
+        .attr("id", `back_${i}`);
+
+      cardElement.append(frontFace, backFace);
+
+      container.append(cardElement);
+
+      totalCards += 0.5;
+    }
+  };
+
   const flipCard = function () {
-    if (clicks == 12) {
+    if (clicks == 8) {
       clicks++;
       hint();
     }
@@ -174,7 +164,7 @@ const setup = () => {
         if (matchedCards === totalCards) {
           stopTimer();
           setTimeout(() => {
-            alert("Congrate! You Win! Life is Fantastic!");
+            alert("You are the Champion!");
             resetGame();
           }, 500);
         }
@@ -193,7 +183,7 @@ const setup = () => {
   };
 
   const hint = () => {
-    alert("POWER UP!");
+    alert("Let's Power Up!");
     $(".card").each(function () {
       if (!$(this).hasClass("matched")) {
         $(this).addClass("flip");
@@ -206,8 +196,8 @@ const setup = () => {
   };
 
   const updateStats = () => {
-    clicksCounter.text(`Number of Click: ${clicks}`);
-    pairsCounter.text(`Number of Matches: ${matchedCards / 2} / ${totalCards / 2}`);
+    clicksCounter.text(`Number of Clicks: ${clicks}`);
+    pairsCounter.text(`Number of Pairs Matches: ${matchedCards / 2} / ${totalCards / 2}`);
   };
 
   const updateDifficulty = (difficulty) => {
@@ -221,19 +211,23 @@ const setup = () => {
       difficultyMultiplier = 1;
     }
     totalCards = $(".card").length * difficultyMultiplier;
-    pairsCounter.text(`Pairs Matched: ${matchedCards / 2} / ${totalCards / 2}`);
+    pairsCounter.text(`Number of Pairs Matches: ${matchedCards / 2} / ${totalCards / 2}`);
     resetGame();
   };
 
-  startButton.on("click", startGame);
-  resetButton.on("click", resetGame);
+
 
   easyButton.on("click", () => updateDifficulty("easy"));
   mediumButton.on("click", () => updateDifficulty("medium"));
   hardButton.on("click", () => updateDifficulty("hard"));
-
+  startButton.on("click", startGame);
+  resetButton.on("click", resetGame);
   createCards();
   updateStats();
 };
 
+
+
 $(document).ready(setup);
+
+
