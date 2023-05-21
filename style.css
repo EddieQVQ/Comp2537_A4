@@ -1,0 +1,69 @@
+body {
+  margin: 0px;
+}
+
+#game_grid {
+  border: 2px tomato solid;
+  width: 600px;
+  height: 400px;
+  margin: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; 
+}
+
+.card {
+  width: 33.3%;
+  position: relative;
+  transition: transform 1s;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
+.med.card {
+  width: 23%;
+}
+
+.hard.card {
+  width: 15%;
+}
+
+img {
+  width: 100%
+}
+
+.front_face,
+.back_face {
+  position: absolute;
+  backface-visibility: hidden;
+}
+
+.flip {
+  transform: rotateY(180deg);
+}
+
+.front_face {
+  transform: rotateY(180deg);
+}
+
+#difficulty {
+  text-align: center;
+  font-family: 'Russo One', sans-serif;
+  margin-top: 10px;
+}
+
+#buttons {
+  text-align: center;
+  font-family: 'Russo One', sans-serif;
+  margin-top: 10px;
+}
+
+#stats {
+  font-family: 'Russo One', sans-serif;
+  text-align: center;
+  font-size: 30px;
+}
+
+
+
+
